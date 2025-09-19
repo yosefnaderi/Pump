@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود ادمین</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+        background: linear-gradient(135deg, #1a2a6c, #1aa, #fdbb2d);
+        color: #fff;
+        display:flex; justify-content:center; align-items:center; height:100vh;
+    }
+    .login-container {
+        background: rgba(0,0,0,0.7);
+        padding: 40px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .login-container h2 { margin-bottom: 30px; color: #FFD700; }
+    .login-container input {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+    .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+        border:none;
+        border-radius: 50px;
+        cursor:pointer;
+        background: linear-gradient(to right, #FF4136, #B10E00);
+        color:white;
+        font-weight:bold;
+        transition: 0.3s;
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .error { color: #FF4136; margin-bottom: 15px; display:none; }
+</style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>ورود ادمین</h2>
+        <div class="error" id="error-msg">نام کاربری یا رمز اشتباه است!</div>
+        <input type="text" id="username" placeholder="نام کاربری">
+        <input type="password" id="password" placeholder="رمز عبور">
+        <button class="btn" onclick="loginAdmin()">ورود</button>
+    </div>
+
+<script>
+    function loginAdmin() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+
+        // نام کاربری و رمز پیشفرض
+        const adminUser = 'Naderi';
+        const adminPass = '13774';
+
+        if(user === adminUser && pass === adminPass){
+            // ورود موفق → رفتن به پنل ادمین
+            window.location.href = 'admin-panel.html';
+        } else {
+            // نمایش خطا
+            document.getElementById('error-msg').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

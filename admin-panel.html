@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ادمین - مدیریت شیفت‌ها و PMها</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #1aa, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #7FDBFF;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #2ECC40, #0074D9);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, #FF4136, #B10E00);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #7FDBFF, #0074D9);
+            color: white;
+        }
+        
+        .btn-pdf {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .shift-list, .pm-list {
+            margin-top: 30px;
+        }
+        
+        .shift-item, .pm-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .shift-item h3, .pm-item h3 {
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .shift-item p, .pm-item p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .shift-actions, .pm-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .table-preview {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .preview-table th, .preview-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .preview-table th {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #FFD700;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2ECC40;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .pdf-container {
+            display: none;
+        }
+        
+        /* استایل تقویم شمسی */
+        .shamsi-date-picker {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .shamsi-date-picker select {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #2c3e50;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .shift-item, .pm-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .shift-actions, .pm-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .shamsi-date-picker {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>پنل ادمین - مدیریت شیفت‌ها و PMها</h1>
+            <p>مدیریت کامل شیفت‌ها و جداول PM برای پنل شیفت</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="shift-management">مدیریت شیفت‌ها</div>
+            <div class="tab" data-tab="pm-management">مدیریت PM ها</div>
+            <div class="tab" data-tab="shift-reports">گزارشات شیفت</div>
+        </div>
+
+        <!-- مدیریت شیفت‌ها -->
+        <div class="tab-content active" id="shift-management">
+            <h2>مدیریت شیفت‌ها و افراد</h2>
+            
+            <div class="form-group">
+                <label for="shift-select">انتخاب شیفت:</label>
+                <select id="shift-select">
+                    <option value="A">شیفت A</option>
+                    <option value="B">شیفت B</option>
+                    <option value="C">شیفت C</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="shift-users">افراد شیفت (با - جدا کنید):</label>
+                <input type="text" id="shift-users" placeholder="مثال: یزدان صفری - سعید شریفی">
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveShift()">
+                <i class="fas fa-save"></i> ذخیره شیفت
+            </button>
+            
+            <div class="shift-list">
+                <h2>لیست شیفت‌ها</h2>
+                <div id="shift-list-container">
+                    <!-- لیست شیفت‌ها توسط جاوااسکریپت ایجاد می‌شود -->
+                </div>
+            </div>
+        </div>
+
+        <!-- مدیریت PM ها -->
+        <div class="tab-content" id="pm-management">
+            <h2>مدیریت جداول PM</h2>
+            
+            <div class="form-group">
+                <label for="pm-type">نوع PM:</label>
+                <select id="pm-type">
+                    <option value="motors">PM موتورها</option>
+                    <option value="fire-pumps">PM پمپ‌های آتش‌نشانی</option>
+                    <option value="water-flow">PM دبی آب و فشارها</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pm-name">نام PM:</label>
+                <input type="text" id="pm-name" placeholder="مثال: PM موتورهای اصلی">
+            </div>
+            
+            <div class="form-group">
+                <label for="pm-description">توضیحات:</label>
+                <textarea id="pm-description" placeholder="توضیحات مربوط به این PM"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="table-columns">ستون‌های جدول (با کاما جدا کنید):</label>
+                <input type="text" id="table-columns" placeholder="مثال: زمان,دما T1,دما T2,جریان I1">
+            </div>
+            
+            <div class="form-group">
+                <label for="table-rows">سطرهای جدول (با کاما جدا کنید):</label>
+                <input type="text" id="table-rows" placeholder="مثال: 6:00,12:00,18:00,24:00">
+            </div>
+            
+            <div class="form-group">
+                <label for="input-types">نوع داده‌های ورودی:</label>
+                <select id="input-types">
+                    <option value="number">عدد</option>
+                    <option value="text">متن</option>
+                    <option value="checkbox">چک باکس</option>
+                    <option value="date">تاریخ</option>
+                    <option value="time">زمان</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="createPmTable()">
+                <i class="fas fa-plus"></i> ایجاد جدول PM
+            </button>
+            
+            <div class="table-preview" id="table-preview" style="display: none;">
+                <h3>پیش‌نمایش جدول</h3>
+                <div id="preview-container"></div>
+            </div>
+            
+            <div class="pm-list">
+                <h2>لیست PM های موجود</h2>
+                <div id="pm-list-container">
+                    <!-- لیست PM ها توسط جاوااسکریپت ایجاد می‌شود -->
+                </div>
+            </div>
+        </div>
+
+        <!-- گزارشات شیفت -->
+        <div class="tab-content" id="shift-reports">
+            <h2>گزارشات و خروجی PDF</h2>
+            
+            <div class="form-group">
+                <label for="report-shift">انتخاب شیفت برای گزارش:</label>
+                <select id="report-shift">
+                    <option value="A">شیفت A</option>
+                    <option value="B">شیفت B</option>
+                    <option value="C">شیفت C</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>تاریخ گزارش (شمسی):</label>
+                <div class="shamsi-date-picker">
+                    <select id="shamsi-year">
+                        <!-- سال‌های شمسی توسط جاوااسکریپت پر می‌شوند -->
+                    </select>
+                    <select id="shamsi-month">
+                        <!-- ماه‌های شمسی توسط جاوااسکریپت پر می‌شوند -->
+                    </select>
+                    <select id="shamsi-day">
+                        <!-- روزهای شمسی توسط جاوااسکریپت پر می‌شوند -->
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn btn-pdf" onclick="generateShiftReport()">
+                <i class="fas fa-file-pdf"></i> تولید گزارش PDF
+            </button>
+            
+            <div id="report-preview" class="shift-list">
+                <!-- پیش‌نمایش گزارش -->
+            </div>
+        </div>
+
+        <footer class="footer">
+            © 1404 سامانه پمپاژ زیر زمینی. تمام حقوق محفوظ است.
+        </footer>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <div class="pdf-container" id="pdf-container">
+        <!-- محتوای PDF -->
+    </div>
+
+    <script>
+        // داده‌های شیفت‌ها
+        let shiftData = JSON.parse(localStorage.getItem('shiftData')) || {
+            A: 'یزدان صفری - سعید شریفی',
+            B: 'جواد کاظمی - آیدین مهدوی',
+            C: 'یوسف نادری - محسن نقی پور'
+        };
+        
+        // داده‌های PM ها
+        let pmData = JSON.parse(localStorage.getItem('pmData')) || {};
+        
+        // مدیریت تب‌ها
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // غیرفعال کردن همه تب‌ها
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // فعال کردن تب انتخاب شده
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // تابع تبدیل تاریخ میلادی به شمسی
+        function gregorian_to_jalali(gy, gm, gd) {
+            let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            let gy2 = (gm > 2) ? (gy + 1) : gy;
+            let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) + (parseInt((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * (parseInt(days / 12053));
+            days %= 12053;
+            jy += 4 * (parseInt(days / 1461));
+            days %= 1461;
+            jy += parseInt((days - 1) / 365);
+            if (days > 365) days = (days - 1) % 365;
+            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+
+        // تابع تبدیل تاریخ شمسی به میلادی
+        function jalali_to_gregorian(jy, jm, jd) {
+            let g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            jy += 1595;
+            let days = -355668 + (365 * jy) + (parseInt(jy / 33) * 8) + parseInt(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+            let gy = 400 * parseInt(days / 146097);
+            days %= 146097;
+            if (days > 36524) {
+                gy += 100 * parseInt(--days / 36524);
+                days %= 36524;
+                if (days >= 365) days++;
+            }
+            gy += 4 * parseInt(days / 1461);
+            days %= 1461;
+            if (days > 365) {
+                gy += parseInt((days - 1) / 365);
+                days = (days - 1) % 365;
+            }
+            let gd = days + 1;
+            let gm;
+            for (gm = 0; gm < 12; gm++) {
+                let v = g_days_in_month[gm];
+                if (gm === 1 && ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0))) v++;
+                if (gd <= v) break;
+                gd -= v;
+            }
+            return [gy, gm + 1, gd];
+        }
+
+        // پر کردن انتخابگر تاریخ شمسی
+        function initShamsiDatePicker() {
+            const shamsiYear = document.getElementById('shamsi-year');
+            const shamsiMonth = document.getElementById('shamsi-month');
+            const shamsiDay = document.getElementById('shamsi-day');
+            
+            // پر کردن سال‌ها (از 1400 تا 1410)
+            shamsiYear.innerHTML = '';
+            for (let year = 1400; year <= 1410; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                shamsiYear.appendChild(option);
+            }
+            
+            // پر کردن ماه‌ها
+            shamsiMonth.innerHTML = '';
+            const months = [
+                'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+            ];
+            
+            months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                shamsiMonth.appendChild(option);
+            });
+            
+            // پر کردن روزها
+            function updateDays() {
+                const year = parseInt(shamsiYear.value);
+                const month = parseInt(shamsiMonth.value);
+                
+                // تعداد روزهای هر ماه شمسی
+                const daysInMonth = month <= 6 ? 31 : month <= 11 ? 30 : (isLeapYear(year) ? 30 : 29);
+                
+                shamsiDay.innerHTML = '';
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = day;
+                    shamsiDay.appendChild(option);
+                }
+            }
+            
+            // بررسی سال کبیسه
+            function isLeapYear(year) {
+                return ((((year + 12) % 33) % 4) === 1);
+            }
+            
+            // تنظیم تاریخ امروز به صورت شمسی
+            const today = new Date();
+            const shamsiToday = gregorian_to_jalali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+            
+            shamsiYear.value = shamsiToday[0];
+            shamsiMonth.value = shamsiToday[1];
+            updateDays();
+            shamsiDay.value = shamsiToday[2];
+            
+            // بروزرسانی روزها هنگام تغییر سال یا ماه
+            shamsiYear.addEventListener('change', updateDays);
+            shamsiMonth.addEventListener('change', updateDays);
+        }
+        
+        // دریافت تاریخ شمسی انتخاب شده
+        function getSelectedShamsiDate() {
+            const year = document.getElementById('shamsi-year').value;
+            const month = document.getElementById('shamsi-month').value;
+            const day = document.getElementById('shamsi-day').value;
+            
+            return `${year}/${month}/${day}`;
+        }
+        
+        // نمایش اعلان
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.style.background = isSuccess ? '#2ECC40' : '#FF4136';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ذخیره شیفت
+        function saveShift() {
+            const shift = document.getElementById('shift-select').value;
+            const users = document.getElementById('shift-users').value.trim();
+            
+            if (!users) {
+                showNotification('لطفاً افراد شیفت را وارد کنید', false);
+                return;
+            }
+            
+            shiftData[shift] = users;
+            localStorage.setItem('shiftData', JSON.stringify(shiftData));
+            
+            // به روز رسانی لیست شیفت‌ها
+            renderShiftList();
+            
+            showNotification(`شیفت ${shift} با موفقیت ذخیره شد`);
+            
+            // ریست فیلد
+            document.getElementById('shift-users').value = '';
+        }
+        
+        // نمایش لیست شیفت‌ها
+        function renderShiftList() {
+            const shiftListContainer = document.getElementById('shift-list-container');
+            shiftListContainer.innerHTML = '';
+            
+            for (const shift in shiftData) {
+                const shiftItem = document.createElement('div');
+                shiftItem.className = 'shift-item';
+                
+                shiftItem.innerHTML = `
+                    <div>
+                        <h3>شیفت ${shift}</h3>
+                        <p>${shiftData[shift]}</p>
+                    </div>
+                    <div class="shift-actions">
+                        <button class="btn btn-secondary" onclick="editShift('${shift}')">
+                            <i class="fas fa-edit"></i> ویرایش
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteShift('${shift}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                `;
+                
+                shiftListContainer.appendChild(shiftItem);
+            }
+        }
+        
+        // ویرایش شیفت
+        function editShift(shift) {
+            document.getElementById('shift-select').value = shift;
+            document.getElementById('shift-users').value = shiftData[shift];
+        }
+        
+        // حذف شیفت
+        function deleteShift(shift) {
+            if (confirm(`آیا از حذف شیفت ${shift} اطمینان دارید؟`)) {
+                delete shiftData[shift];
+                localStorage.setItem('shiftData', JSON.stringify(shiftData));
+                renderShiftList();
+                showNotification('شیفت با موفقیت حذف شد');
+            }
+        }
+        
+        // ایجاد جدول PM
+        function createPmTable() {
+            const type = document.getElementById('pm-type').value;
+            const name = document.getElementById('pm-name').value.trim();
+            const description = document.getElementById('pm-description').value.trim();
+            const columns = document.getElementById('table-columns').value.split(',').map(c => c.trim());
+            const rows = document.getElementById('table-rows').value.split(',').map(r => r.trim());
+            const inputType = document.getElementById('input-types').value;
+            
+            if (!name || columns.length === 0 || rows.length === 0) {
+                showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', false);
+                return;
+            }
+            
+            // ایجاد ساختار داده PM
+            const pmId = type + '-pm-' + Date.now();
+            pmData[pmId] = {
+                id: pmId,
+                type,
+                name,
+                description,
+                columns,
+                rows,
+                inputType,
+                createdAt: new Date().toLocaleString('fa-IR')
+            };
+            
+            // ذخیره در localStorage
+            localStorage.setItem('pmData', JSON.stringify(pmData));
+            
+            // نمایش پیش‌نمایش
+            generatePreview(pmData[pmId]);
+            
+            // به روز رسانی لیست PM ها
+            renderPmList();
+            
+            showNotification(`جدول "${name}" با موفقیت ایجاد شد`);
+            
+            // ریست فرم
+            document.getElementById('pm-name').value = '';
+            document.getElementById('pm-description').value = '';
+            document.getElementById('table-columns').value = '';
+            document.getElementById('table-rows').value = '';
+        }
+        
+        // تولید پیش‌نمایش جدول
+        function generatePreview(pm) {
+            const previewContainer = document.getElementById('preview-container');
+            const tablePreview = document.getElementById('table-preview');
+            
+            let tableHTML = `
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>${pm.columns[0]}</th>
+            `;
+            
+            // اضافه کردن ستون‌ها
+            for (let i = 1; i < pm.columns.length; i++) {
+                tableHTML += `<th>${pm.columns[i]}</th>`;
+            }
+            
+            tableHTML += `</tr></thead><tbody>`;
+            
+            // اضافه کردن سطرها
+            for (const row of pm.rows) {
+                tableHTML += `<tr><td>${row}</td>`;
+                
+                for (let i = 1; i < pm.columns.length; i++) {
+                    tableHTML += `<td>`;
+                    
+                    if (pm.inputType === 'checkbox') {
+                        tableHTML += `<input type="checkbox" disabled>`;
+                    } else {
+                        tableHTML += `<input type="${pm.inputType}" disabled style="width: 100%; padding: 5px; border: none; background: transparent; color: white; text-align: center;">`;
+                    }
+                    
+                    tableHTML += `</td>`;
+                }
+                
+                tableHTML += `</tr>`;
+            }
+            
+            tableHTML += `</tbody></table>`;
+            
+            previewContainer.innerHTML = tableHTML;
+            tablePreview.style.display = 'block';
+        }
+        
+        // حذف PM
+        function deletePm(pmId) {
+            if (confirm('آیا از حذف این PM اطمینان دارید؟')) {
+                delete pmData[pmId];
+                localStorage.setItem('pmData', JSON.stringify(pmData));
+                renderPmList();
+                showNotification('PM با موفقیت حذف شد');
+            }
+        }
+        
+        // ویرایش PM
+        function editPm(pmId) {
+            const pm = pmData[pmId];
+            
+            document.getElementById('pm-type').value = pm.type;
+            document.getElementById('pm-name').value = pm.name;
+            document.getElementById('pm-description').value = pm.description;
+            document.getElementById('table-columns').value = pm.columns.join(', ');
+            document.getElementById('table-rows').value = pm.rows.join(', ');
+            document.getElementById('input-types').value = pm.inputType;
+            
+            generatePreview(pm);
+            
+            // حذف PM قدیمی و ایجاد جدید با همان ID
+            delete pmData[pmId];
+            
+            showNotification('می‌توانید تغییرات را اعمال و دوباره ذخیره کنید');
+        }
+        
+        // نمایش لیست PM ها
+        function renderPmList() {
+            const pmListContainer = document.getElementById('pm-list-container');
+            
+            if (Object.keys(pmData).length === 0) {
+                pmListContainer.innerHTML = '<p>هیچ PMی ایجاد نشده است.</p>';
+                return;
+            }
+            
+            pmListContainer.innerHTML = '';
+            
+            for (const pmId in pmData) {
+                const pm = pmData[pmId];
+                
+                const pmItem = document.createElement('div');
+                pmItem.className = 'pm-item';
+                
+                pmItem.innerHTML = `
+                    <div>
+                        <h3>${pm.name} (${getPmTypeName(pm.type)})</h3>
+                        <p>${pm.description}</p>
+                        <p><small>تعداد ستون‌ها: ${pm.columns.length} | تعداد سطرها: ${pm.rows.length}</small></p>
+                        <p><small>ایجاد شده در: ${pm.createdAt}</small></p>
+                    </div>
+                    <div class="pm-actions">
+                        <button class="btn btn-secondary" onclick="editPm('${pmId}')">
+                            <i class="fas fa-edit"></i> ویرایش
+                        </button>
+                        <button class="btn btn-danger" onclick="deletePm('${pmId}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                `;
+                
+                pmListContainer.appendChild(pmItem);
+            }
+        }
+        
+        // دریافت نام نوع PM
+        function getPmTypeName(type) {
+            const types = {
+                'motors': 'موتورها',
+                'fire-pumps': 'پمپ‌های آتش‌نشانی',
+                'water-flow': 'دبی آب و فشارها'
+            };
+            return types[type] || type;
+        }
+        
+        // تولید گزارش PDF
+        function generateShiftReport() {
+            const shift = document.getElementById('report-shift').value;
+            const shamsiDate = getSelectedShamsiDate();
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // عنوان گزارش
+            doc.setFontSize(20);
+            doc.text('گزارش شیفت', 105, 15, { align: 'center' });
+            
+            // اطلاعات شیفت
+            doc.setFontSize(14);
+            doc.text(`شیفت: ${shift}`, 20, 30);
+            doc.text(`تاریخ: ${shamsiDate}`, 20, 40);
+            doc.text(`اعضا: ${shiftData[shift] || 'تعریف نشده'}`, 20, 50);
+            
+            // افزودن جداول PM
+            let yPosition = 70;
+            
+            for (const pmId in pmData) {
+                const pm = pmData[pmId];
+                
+                // عنوان PM
+                doc.setFontSize(12);
+                doc.text(`${pm.name} (${getPmTypeName(pm.type)})`, 20, yPosition);
+                yPosition += 10;
+                
+                // ایجاد جدول
+                const headers = pm.columns;
+                const rows = [];
+                
+                for (const row of pm.rows) {
+                    const rowData = [row];
+                    for (let i = 1; i < pm.columns.length; i++) {
+                        rowData.push(''); // مقادیر خالی برای داده‌ها
+                    }
+                    rows.push(rowData);
+                }
+                
+                // رسم جدول
+                doc.autoTable({
+                    startY: yPosition,
+                    head: [headers],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [41, 128, 185],
+                        textColor: 255
+                    }
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 15;
+                
+                // اگر فضای کافی وجود ندارد، صفحه جدید ایجاد کنید
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+            }
+            
+            // ذخیره PDF
+            doc.save(`گزارش_شیفت_${shift}_${shamsiDate.replace(/\//g, '-')}.pdf`);
+            
+            showNotification('گزارش PDF با موفقیت تولید و دانلود شد');
+        }
+        
+        // بارگذاری اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            renderShiftList();
+            renderPmList();
+            initShamsiDatePicker();
+            
+            // پیش‌نمایش هنگام تغییر مقادیر
+            document.getElementById('table-columns').addEventListener('input', updatePreview);
+            document.getElementById('table-rows').addEventListener('input', updatePreview);
+            document.getElementById('input-types').addEventListener('change', updatePreview);
+        });
+        
+        // به روز رسانی پیش‌نمایش
+        function updatePreview() {
+            const name = document.getElementById('pm-name').value.trim() || 'نام PM';
+            const columns = document.getElementById('table-columns').value.split(',').map(c => c.trim()).filter(c => c);
+            const rows = document.getElementById('table-rows').value.split(',').map(r => r.trim()).filter(r => r);
+            const inputType = document.getElementById('input-types').value;
+            
+            if (columns.length > 0 && rows.length > 0) {
+                const previewPm = {
+                    name,
+                    columns: columns.length > 0 ? columns : ['ستون 1'],
+                    rows: rows.length > 0 ? rows : ['سطر 1'],
+                    inputType
+                };
+                
+                generatePreview(previewPm);
+            }
+        }
+    </script>
+</body>
+</html>

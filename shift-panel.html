@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل شیفت - پمپاژ زیر زمینی</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #1aa, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #FFD700;
+        }
+        
+        .shift-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .datetime {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .date, .time {
+            margin: 10px 0;
+        }
+        
+        .date {
+            font-size: 1.5rem;
+            color: #FFD700;
+        }
+        
+        .time {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #7FDBFF;
+        }
+        
+        .shift-users {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .shift-users p {
+            font-size: 1.2rem;
+        }
+        
+        .menu {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .menu-items {
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .menu-items div {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-items div:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+        
+        /* استایل برای پنل موتورها */
+        .motors-panel {
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .motors-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .motors-header h2 {
+            color: #FFD700;
+        }
+        
+        .back-btn {
+            padding: 8px 15px;
+            background: #7f8c8d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #95a5a6;
+        }
+        
+        .motor-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .motor-tab {
+            padding: 10px 15px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .motor-tab.active {
+            background: #3498db;
+        }
+        
+        .motor-content {
+            display: none;
+        }
+        
+        .motor-content.active {
+            display: block;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .data-table th {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #FFD700;
+        }
+        
+        .data-table input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #2ECC40, #0074D9);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .date {
+                font-size: 1.2rem;
+            }
+            
+            .time {
+                font-size: 2rem;
+            }
+            
+            .data-table {
+                font-size: 0.8rem;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>پنل شیفت</h1>
+            <select class="shift-select" id="shift-select">
+                <option value="A">شیفت A</option>
+                <option value="B">شیفت B</option>
+                <option value="C">شیفت C</option>
+            </select>
+        </header>
+
+        <div class="datetime">
+            <div class="date" id="shamsi-date">-- -- ----</div>
+            <div class="time" id="current-time">--:--:--</div>
+        </div>
+
+        <div class="shift-users" id="shift-users-display">
+            <p>افراد شیفت: --</p>
+        </div>
+
+        <div class="menu">
+            <div class="menu-header" id="menu-header">
+                <span>منوی PM <i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="menu-items" id="menu-items">
+                <div id="pm-motors">PM موتورها</div>
+                <div>PM پمپ‌های آتش‌نشانی</div>
+                <div>PM دبی آب و فشارها</div>
+                <div>توضیحات</div>
+            </div>
+        </div>
+        
+        <!-- پنل موتورها -->
+        <div class="motors-panel" id="motors-panel">
+            <div class="motors-header">
+                <h2>PM موتورها</h2>
+                <button class="back-btn" id="back-from-motors">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </button>
+            </div>
+            
+            <div class="motor-tabs" id="motor-tabs">
+                <!-- تب‌های موتورها توسط جاوااسکریپت ایجاد می‌شوند -->
+            </div>
+            
+            <div id="motor-contents">
+                <!-- محتوای موتورها توسط جاوااسکریپت ایجاد می‌شوند -->
+            </div>
+        </div>
+
+        <footer class="footer">
+            © 1404 سامانه پمپاژ زیر زمینی. تمام حقوق محفوظ است.
+        </footer>
+    </div>
+
+    <script>
+        // تابع تبدیل تاریخ میلادی به شمسی
+        function gregorian_to_jalali(gy, gm, gd) {
+            let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            let gy2 = (gm > 2) ? (gy + 1) : gy;
+            let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) + (parseInt((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * (parseInt(days / 12053));
+            days %= 12053;
+            jy += 4 * (parseInt(days / 1461));
+            days %= 1461;
+            jy += parseInt((days - 1) / 365);
+            if (days > 365) days = (days - 1) % 365;
+            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+
+        // تابع برای نمایش تاریخ و زمان به صورت بروزرسانی شده
+        function updateDateTime() {
+            const now = new Date();
+            
+            // تبدیل تاریخ به شمسی
+            const shamsiDate = gregorian_to_jalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            const shamsiDateStr = `${shamsiDate[0]}/${shamsiDate[1] < 10 ? '0' + shamsiDate[1] : shamsiDate[1]}/${shamsiDate[2] < 10 ? '0' + shamsiDate[2] : shamsiDate[2]}`;
+            document.getElementById('shamsi-date').textContent = shamsiDateStr;
+            
+            // نمایش زمان
+            const timeStr = now.toLocaleTimeString('fa-IR');
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // بروزرسانی زمان هر ثانیه
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); // فراخوانی اولیه
+
+        // بارگذاری داده‌های شیفت از localStorage
+        let shifts = JSON.parse(localStorage.getItem('shifts')) || {
+            A: 'یزدان صفری-سعید شریفی',
+            B: 'جواد کاظمی-آیدین مهدوی',
+            C: 'یوسف نادری-محسن نقی پور'
+        };
+
+        const shiftSelect = document.getElementById('shift-select');
+        const shiftUsersDisplay = document.getElementById('shift-users-display');
+        const menuHeader = document.getElementById('menu-header');
+        const menuItems = document.getElementById('menu-items');
+        const pmMotors = document.getElementById('pm-motors');
+        const motorsPanel = document.getElementById('motors-panel');
+        const backFromMotors = document.getElementById('back-from-motors');
+        const motorTabs = document.getElementById('motor-tabs');
+        const motorContents = document.getElementById('motor-contents');
+
+        // نمایش افراد شیفت
+        function displayShiftUsers() {
+            const shift = shiftSelect.value;
+            shiftUsersDisplay.innerHTML = `<p>افراد شیفت: ${shifts[shift]}</p>`;
+        }
+
+        // منوی جمع شو
+        menuHeader.addEventListener('click', () => {
+            if (menuItems.style.display === 'flex') {
+                menuItems.style.display = 'none';
+                menuHeader.querySelector('i').classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                menuItems.style.display = 'flex';
+                menuHeader.querySelector('i').classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        });
+
+        // نمایش پنل موتورها
+        pmMotors.addEventListener('click', () => {
+            motorsPanel.style.display = 'block';
+            createMotorTabs();
+        });
+
+        // بازگشت از پنل موتورها
+        backFromMotors.addEventListener('click', () => {
+            motorsPanel.style.display = 'none';
+        });
+
+        // ایجاد تب‌های موتورها
+        function createMotorTabs() {
+            motorTabs.innerHTML = '';
+            motorContents.innerHTML = '';
+            
+            for (let i = 1; i <= 8; i++) {
+                // ایجاد تب
+                const tab = document.createElement('button');
+                tab.className = 'motor-tab';
+                tab.textContent = `موتور ${i}`;
+                tab.dataset.motor = i;
+                if (i === 1) tab.classList.add('active');
+                
+                tab.addEventListener('click', function() {
+                    // غیرفعال کردن همه تب‌ها
+                    document.querySelectorAll('.motor-tab').forEach(t => t.classList.remove('active'));
+                    // فعال کردن تب انتخاب شده
+                    this.classList.add('active');
+                    // نمایش محتوای مربوطه
+                    document.querySelectorAll('.motor-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`motor-${this.dataset.motor}`).classList.add('active');
+                });
+                
+                motorTabs.appendChild(tab);
+                
+                // ایجاد محتوای موتور
+                const content = document.createElement('div');
+                content.className = 'motor-content';
+                content.id = `motor-${i}`;
+                if (i === 1) content.classList.add('active');
+                
+                // ایجاد جدول داده‌ها
+                const table = document.createElement('table');
+                table.className = 'data-table';
+                
+                // سرستون‌ها
+                let thead = `<tr>
+                    <th>زمان</th>
+                    <th colspan="10">دما (T)</th>
+                    <th colspan="2">دما (D)</th>
+                    <th colspan="3">جریان (I)</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th>
+                    <th>T6</th><th>T7</th><th>T8</th><th>T9</th><th>T10</th>
+                    <th>D1</th><th>D2</th>
+                    <th>I1</th><th>I2</th><th>I3</th>
+                </tr>`;
+                
+                // ردیف‌های داده برای ساعات مختلف
+                let tbody = '';
+                const times = ['6:00', '12:00', '18:00', '24:00'];
+                
+                times.forEach(time => {
+                    tbody += `<tr>
+                        <td>${time}</td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T1"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T2"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T3"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T4"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T5"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T6"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T7"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T8"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T9"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="T10"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="D1"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="D2"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="I1"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="I2"></td>
+                        <td><input type="number" data-motor="${i}" data-time="${time}" data-type="I3"></td>
+                    </tr>`;
+                });
+                
+                table.innerHTML = thead + tbody;
+                content.appendChild(table);
+                
+                // دکمه ذخیره
+                const saveButton = document.createElement('button');
+                saveButton.className = 'save-btn';
+                saveButton.innerHTML = '<i class="fas fa-save"></i> ذخیره داده‌های موتور ' + i;
+                saveButton.addEventListener('click', () => saveMotorData(i));
+                content.appendChild(saveButton);
+                
+                motorContents.appendChild(content);
+            }
+            
+            // بارگذاری داده‌های ذخیره شده
+            loadMotorData();
+        }
+
+        // ذخیره داده‌های موتور
+        function saveMotorData(motorId) {
+            const inputs = document.querySelectorAll(`input[data-motor="${motorId}"]`);
+            const data = {};
+            
+            inputs.forEach(input => {
+                const key = `${motorId}-${input.dataset.time}-${input.dataset.type}`;
+                data[key] = input.value;
+            });
+            
+            localStorage.setItem(`motor-${motorId}`, JSON.stringify(data));
+            alert(`داده‌های موتور ${motorId} با موفقیت ذخیره شد!`);
+        }
+
+        // بارگذاری داده‌های موتور
+        function loadMotorData() {
+            for (let i = 1; i <= 8; i++) {
+                const data = JSON.parse(localStorage.getItem(`motor-${i}`) || '{}');
+                
+                for (const key in data) {
+                    const input = document.querySelector(`input[data-motor="${i}"][data-time="${key.split('-')[1]}"][data-type="${key.split('-')[2]}"]`);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                }
+            }
+        }
+
+        // تغییر شیفت
+        shiftSelect.addEventListener('change', displayShiftUsers);
+
+        // نمایش اولیه
+        displayShiftUsers();
+    </script>
+</body>
+</html>
