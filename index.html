@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پمپاژ زیر زمینی - مدیریت لوگو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #1aa, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid #fff;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px; /* حاشیه داخلی برای فاصله از border */
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .logo-container i {
+            font-size: 40px;
+            color: #fff;
+        }
+        
+        .logo-left {
+            background: linear-gradient(45deg, #0074D9, #001f3f);
+        }
+        
+        .logo-right {
+            background: linear-gradient(45deg, #FF4136, #85144b);
+        }
+        
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* تغییر از cover به contain برای نمایش کامل تصویر */
+            display: none;
+            border-radius: 50%; /* گرد کردن گوشه های تصویر */
+            padding: 5px; /* حاشیه داخلی برای تصاویر */
+            background-color: white; /* پس زمینه سفید برای تصاویر با transparency */
+        }
+        
+        .title {
+            flex-grow: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .title h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+        
+        .title p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .datetime {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .date, .time {
+            margin: 15px 0;
+        }
+        
+        .date {
+            font-size: 2rem;
+            color: #FFD700;
+        }
+        
+        .time {
+            font-size: 3.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #7FDBFF;
+        }
+        
+        .login-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .btn {
+            padding: 18px 35px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-admin {
+            background: linear-gradient(to right, #FF4136, #B10E00);
+            color: white;
+        }
+        
+        .btn-shift {
+            background: linear-gradient(to right, #0074D9, #0059A6);
+            color: white;
+        }
+        
+        .btn-upload {
+            background: linear-gradient(to right, #2ECC40, #0074D9);
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .upload-section {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .upload-section h3 {
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .upload-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .upload-btn {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #2ECC40, #0074D9);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .logo-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #fff;
+            border-radius: 10px;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+            object-fit: contain;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .logo-tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        
+        .logo-container:hover .logo-tooltip {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .logo-container {
+                width: 80px;
+                height: 80px;
+                margin: 10px 0;
+            }
+            
+            .logo-container i {
+                font-size: 30px;
+            }
+            
+            .title h1 {
+                font-size: 2rem;
+            }
+            
+            .datetime {
+                padding: 15px 20px;
+            }
+            
+            .date {
+                font-size: 1.5rem;
+            }
+            
+            .time {
+                font-size: 2.5rem;
+            }
+            
+            .login-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .upload-options {
+                flex-direction: column;
+            }
+            
+            .logo-tooltip {
+                bottom: -25px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container logo-left" id="left-logo-container">
+                <i class="fas fa-water" id="left-logo-icon"></i>
+                <img src="" class="logo-img" id="left-logo-img" alt="لوگوی سمت چپ">
+                <input type="file" id="left-logo-input" class="file-input" accept="image/*">
+                <div class="logo-tooltip">برای تغییر لوگو کلیک کنید</div>
+            </div>
+            
+            <div class="title">
+                <h1>پمپاژ زیر زمینی</h1>
+                <p>سامانه pm پمپاژ زیرزمینی</p>
+            </div>
+            
+            <div class="logo-container logo-right" id="right-logo-container">
+                <i class="fas fa-industry" id="right-logo-icon"></i>
+                <img src="" class="logo-img" id="right-logo-img" alt="لوگوی سمت راست">
+                <input type="file" id="right-logo-input" class="file-input" accept="image/*">
+                <div class="logo-tooltip">برای تغییر لوگو کلیک کنید</div>
+            </div>
+        </header>
+        
+        <div class="datetime">
+            <div class="date" id="shamsi-date">-- -- ----</div>
+            <div class="time" id="current-time">--:--:--</div>
+        </div>
+        
+        <div class="login-buttons">
+           <button class="btn btn-admin" onclick="window.location.href='admin-login.html'">
+    <i class="fas fa-user-cog"></i>
+    ورود ادمین
+</button>
+           <button class="btn btn-shift" onclick="window.location.href='shift-panel.html'">
+    <i class="fas fa-user-clock"></i>
+    ورود شیفت
+</button>
+        </div>
+        
+        <div class="upload-section">
+            <h3>راهنمای تغییر لوگو</h3>
+            <p>برای تغییر لوگوها، روی هر یک از لوگوهای بالا کلیک کنید و عکس مورد نظر را انتخاب نمایید.</p>
+            
+            <div class="logo-preview">
+                <img id="preview-image" src="" alt="پیش‌نمایش لوگو">
+                <span id="preview-text">پیش‌نمایش لوگوی انتخاب شده</span>
+            </div>
+            
+            <button class="btn btn-upload" id="save-logos">
+                <i class="fas fa-sync-alt"></i>
+                بازنشانی لوگوها به حالت پیش‌فرض
+            </button>
+        </div>
+        
+        <footer class="footer">
+            <p>© 1404 سامانه پمپاژ زیر زمینی. تمام حقوق محفوظ است.</p>
+        </footer>
+    </div>
+
+    <script>
+        // تابع تبدیل تاریخ میلادی به شمسی
+        function gregorian_to_jalali(gy, gm, gd) {
+            let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            let gy2 = (gm > 2) ? (gy + 1) : gy;
+            let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) + (parseInt((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * (parseInt(days / 12053));
+            days %= 12053;
+            jy += 4 * (parseInt(days / 1461));
+            days %= 1461;
+            jy += parseInt((days - 1) / 365);
+            if (days > 365) days = (days - 1) % 365;
+            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+
+        // تابع برای نمایش تاریخ و زمان به صورت بروزرسانی شده
+        function updateDateTime() {
+            const now = new Date();
+            
+            // تبدیل تاریخ به شمسی
+            const shamsiDate = gregorian_to_jalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            const shamsiDateStr = `${shamsiDate[0]}/${shamsiDate[1] < 10 ? '0' + shamsiDate[1] : shamsiDate[1]}/${shamsiDate[2] < 10 ? '0' + shamsiDate[2] : shamsiDate[2]}`;
+            document.getElementById('shamsi-date').textContent = shamsiDateStr;
+            
+            // نمایش زمان
+            const timeStr = now.toLocaleTimeString('fa-IR');
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // بروزرسانی زمان هر ثانیه
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); // فراخوانی اولیه
+
+        // مدیریت آپلود لوگو
+        const leftLogoInput = document.getElementById('left-logo-input');
+        const rightLogoInput = document.getElementById('right-logo-input');
+        const leftLogoContainer = document.getElementById('left-logo-container');
+        const rightLogoContainer = document.getElementById('right-logo-container');
+        const leftLogoImg = document.getElementById('left-logo-img');
+        const rightLogoImg = document.getElementById('right-logo-img');
+        const leftLogoIcon = document.getElementById('left-logo-icon');
+        const rightLogoIcon = document.getElementById('right-logo-icon');
+        const previewImage = document.getElementById('preview-image');
+        const previewText = document.getElementById('preview-text');
+        const saveLogosBtn = document.getElementById('save-logos');
+
+        // بارگذاری لوگوهای ذخیره شده از localStorage
+        function loadSavedLogos() {
+            const savedLeftLogo = localStorage.getItem('leftLogo');
+            const savedRightLogo = localStorage.getItem('rightLogo');
+            
+            if (savedLeftLogo) {
+                leftLogoImg.src = savedLeftLogo;
+                leftLogoImg.style.display = 'block';
+                leftLogoIcon.style.display = 'none';
+            }
+            
+            if (savedRightLogo) {
+                rightLogoImg.src = savedRightLogo;
+                rightLogoImg.style.display = 'block';
+                rightLogoIcon.style.display = 'none';
+            }
+        }
+
+        // نمایش پیش‌نمایش لوگو و تنظیم خودکار
+        function showPreview(event, side) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    
+                    img.onload = function() {
+                        // تنظیمات خودکار بر اساس ابعاد تصویر
+                        const width = this.width;
+                        const height = this.height;
+                        
+                        // تعیین padding بر اساس نسبت ابعاد تصویر
+                        let paddingValue = '5px';
+                        if (width > height * 1.5) {
+                            paddingValue = '8px 3px'; // تصاویر عریض
+                        } else if (height > width * 1.5) {
+                            paddingValue = '3px 8px'; // تصاویر بلند
+                        }
+                        
+                        // نمایش فوری لوگو بدون نیاز به کلیک روی ذخیره
+                        if (side === 'left') {
+                            leftLogoImg.src = e.target.result;
+                            leftLogoImg.style.display = 'block';
+                            leftLogoIcon.style.display = 'none';
+                            leftLogoImg.style.padding = paddingValue;
+                        } else if (side === 'right') {
+                            rightLogoImg.src = e.target.result;
+                            rightLogoImg.style.display = 'block';
+                            rightLogoIcon.style.display = 'none';
+                            rightLogoImg.style.padding = paddingValue;
+                        }
+                        
+                        // ذخیره خودکار در localStorage
+                        localStorage.setItem(side + 'Logo', e.target.result);
+                        localStorage.setItem(side + 'LogoPadding', paddingValue);
+                        
+                        // نمایش پیام موفقیت
+                        alert('لوگوی ' + (side === 'left' ? 'سمت چپ' : 'سمت راست') + ' با موفقیت تغییر کرد!');
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // بازنشانی لوگوها به حالت پیش‌فرض
+        function resetLogos() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید لوگوها را به حالت پیش‌فرض بازنشانی کنید؟')) {
+                localStorage.removeItem('leftLogo');
+                localStorage.removeItem('rightLogo');
+                localStorage.removeItem('leftLogoPadding');
+                localStorage.removeItem('rightLogoPadding');
+                
+                leftLogoImg.style.display = 'none';
+                rightLogoImg.style.display = 'none';
+                leftLogoIcon.style.display = 'flex';
+                rightLogoIcon.style.display = 'flex';
+                
+                leftLogoImg.style.padding = '5px';
+                rightLogoImg.style.padding = '5px';
+                
+                alert('لوگوها با موفقیت بازنشانی شدند!');
+            }
+        }
+
+        // کلیک روی لوگوی سمت چپ
+        leftLogoContainer.addEventListener('click', function() {
+            leftLogoInput.click();
+        });
+
+        // کلیک روی لوگوی سمت راست
+        rightLogoContainer.addEventListener('click', function() {
+            rightLogoInput.click();
+        });
+
+        // تغییر لوگوی سمت چپ
+        leftLogoInput.addEventListener('change', (e) => showPreview(e, 'left'));
+        
+        // تغییر لوگوی سمت راست
+        rightLogoInput.addEventListener('change', (e) => showPreview(e, 'right'));
+
+        // بازنشانی لوگوها
+        saveLogosBtn.addEventListener('click', resetLogos);
+
+        // بارگذاری لوگوهای ذخیره شده هنگام لود صفحه
+        window.addEventListener('load', function() {
+            loadSavedLogos();
+            
+            // بارگذاری paddingهای ذخیره شده
+            const leftPadding = localStorage.getItem('leftLogoPadding');
+            const rightPadding = localStorage.getItem('rightLogoPadding');
+            
+            if (leftPadding) {
+                leftLogoImg.style.padding = leftPadding;
+            }
+            
+            if (rightPadding) {
+                rightLogoImg.style.padding = rightPadding;
+            }
+        });
+    </script>
+</body>
+  </html>
